@@ -66,7 +66,7 @@ class Pdf2Text(object):
 
         return text
 
-    def pdfs2text(self, directory_path):
+    def pdfs2txt(self, directory_path):
         # Initialize an empty list to store the text from each PDF
         text_list = []
 
