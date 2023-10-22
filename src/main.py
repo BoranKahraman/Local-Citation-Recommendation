@@ -1,9 +1,14 @@
 import os
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 import PyPDF2
 import re
+from sentence_transformers import SentenceTransformer
 
 # Define the citation patterns
 citation_patterns = {
+    'paranthesis':r'\(\w+ [ve]+ \w+, \d+:\s\d+\)',
+    'date_only': r'\(\d{4}\)',
     'APA': r'\(\w+,\s\d{4}\)',
     'APA-Page': r'\(\w+(\s\w+)+,\s\d{4},\s?p\.\s\d+\)',
     'MLA': r'\(\w+\s\d+\)',
@@ -35,7 +40,7 @@ citation_patterns = {
     'Legal Citations with Court Cases': r'\(\w+\s\d+\)',
     'ISO 690-2 Numeric': r'\[\d+\]',
     'ISO 690-2 Author-Date': r'\(\w+\s\d{4}\)',
-    'APA Parenthetical': r'\(\w+,\s\d{4}\)',
+    #'APA Parenthetical': r'\(\w+,\s\d{4}\)',
     'ASA Parenthetical': r'\(\w+\s\d+\)',
     'CMS Author-Date': r'\(\w+\s\d{4}\)',
     'Legal Citations with Statutes': r'\(\w+\s\d+\)',
@@ -43,6 +48,7 @@ citation_patterns = {
     'ISO 690-2 Numeric': r'\[\d+\]',
     'ISO 690-2 Author-Date': r'\(\w+\s\d{4}\)',
 }
+
 
 # Combine the regex patterns into a list
 regex_patterns = list(citation_patterns.values())
@@ -66,7 +72,7 @@ class Pdf2Text(object):
 
         return text
 
-    def pdfs2txt(self, directory_path):
+    def pdfs2text(self, directory_path):
         # Initialize an empty list to store the text from each PDF
         text_list = []
 
@@ -77,7 +83,7 @@ class Pdf2Text(object):
                 pdf_file_path = os.path.join(directory_path, filename)
 
                 # Open the PDF file in read-binary mode
-                with open(pdf_file_path, 'rb') as pdf_file:
+                with open(pdf_file_path, 'r' , encoding="utf-8") as pdf_file:
                     pdf_reader = PyPDF2.PdfReader(pdf_file)
 
                     # Initialize text for the current PDF
@@ -102,6 +108,8 @@ class CitationExtractor(object):
     def extractCitationSingleDocument(self, text, style):
 
         pairs = {
+            'paranthesis': [],
+            'date_only': [],
             'APA': [],
             'APA-Page': [],
             'MLA': [],
@@ -125,7 +133,7 @@ class CitationExtractor(object):
             'Legal Bluebook': [],
             'Vancouver Superscript': [],
             'Bluebook Law Review': [],
-            'APA Parenthetical': [],
+            #'APA Parenthetical': [],
             'ASA Parenthetical': [],
             'CMS Author-Date': [],
             'Custom': [],
@@ -159,6 +167,57 @@ class CitationExtractor(object):
                     pairs[style].append(sentence)
 
         return pairs
+    
+    def convert2list(self, pairs):
+        
+        intext = [e for e in pair.values() if len(e) != 0]
+        intext_flattened_list = [item for sublist in intext for item in sublist]
+
+        return intext_flattened_list        
+
+class ReferenceExtractor(object):
+    def __init__(self):
+        pass
+
+    def extractReferences(txt, lan):
+        
+        if lan == "tr":
+            after_ref = txt.split("Kaynakça")[1]
+            references = after_ref.split(" \n")
+        
+        elif lan == "en":
+            after_ref = txt.split("References")[1]
+            references = after_ref.split(" \n")
+        
+        return references
+
+
+
+class CitationReferenceMatcher(object):
+    
+    model = SentenceTransformer('emrecan/bert-base-turkish-cased-mean-nli-stsb-tr')
+
+    def __init__(self):
+        pass
+
+    def matchCitationsWithReferences(self, intext, ref):
+        
+        embedding_intext = model.encode(intext)
+        embedding_ref = model.encode(ref)
+        
+        similarity_matrix = cosine_similarity(embedding_intext, embedding_ref)
+        
+        matches = []
+        
+        for i in range(len(similarity_matrix)):
+            best_match_index = np.argmax(similarity_matrix[i])
+            # First element is index for intext citation second is for reference
+            matches.append([intext[i], ref[best_match_index]]) 
+        
+        return matches
+        
+            
+        
 
 
 
