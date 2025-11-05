@@ -1,9 +1,11 @@
 # Local-Citation-Recommendation
 This project proposes a Local Citation Recommendation (LCR) system for Turkish academic papers, designed to assist researchers by automatically identifying and suggesting relevant citations within a document.
 Unlike traditional global citation systems that rely solely on content similarity, this model integrates context awareness—analyzing the local text window around each citation—to deliver more accurate and meaningful references.
+<img width="513" height="588" alt="image" src="https://github.com/user-attachments/assets/001ea04f-bfce-4421-bb17-7d7ab0e5e7fe" />
+
 
 The system uses Natural Language Processing (NLP) techniques and combines BM25 for initial ranking with SciNCL (Scientific Neighborhood Contrastive Learning) for re-ranking, providing both efficiency and contextual depth.
-🧩 System Architecture
+# 🧩 System Architecture
 
 ## PDF Parsing (GROBID):
 Academic papers in PDF format are parsed into XML using GROBID, extracting metadata, in-text citation markers, and reference lists.
@@ -35,10 +37,8 @@ The model achieves competitive performance, closely approaching BERTurk benchmar
 -pandas, pickle, scikit-learn, matplotlib for preprocessing and visualization
 
 ## 📊 Results
-Metric	@3	@5	@10
-Precision@k	0.0546	0.1168	0.2072
-MRR@k	0.0355	0.0500	0.0630
-NDCG@k	0.0400	0.0660	0.0970
+<img width="486" height="121" alt="image" src="https://github.com/user-attachments/assets/c5d6c4c2-4f61-46a7-8430-c680136660f3" />
+
 
 The system successfully retrieves contextually relevant Turkish academic papers and demonstrates a scalable approach to language-specific citation recommendation.
 
