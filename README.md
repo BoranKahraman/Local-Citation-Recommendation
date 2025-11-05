@@ -1,10 +1,10 @@
 # Local-Citation-Recommendation
 This project proposes a Local Citation Recommendation (LCR) system for Turkish academic papers, designed to assist researchers by automatically identifying and suggesting relevant citations within a document.
 Unlike traditional global citation systems that rely solely on content similarity, this model integrates context awareness—analyzing the local text window around each citation—to deliver more accurate and meaningful references.
+The system uses Natural Language Processing (NLP) techniques and combines BM25 for initial ranking with SciNCL (Scientific Neighborhood Contrastive Learning) for re-ranking, providing both efficiency and contextual depth.
 <img width="513" height="588" alt="image" src="https://github.com/user-attachments/assets/001ea04f-bfce-4421-bb17-7d7ab0e5e7fe" />
 
 
-The system uses Natural Language Processing (NLP) techniques and combines BM25 for initial ranking with SciNCL (Scientific Neighborhood Contrastive Learning) for re-ranking, providing both efficiency and contextual depth.
 # 🧩 System Architecture
 
 ## PDF Parsing (GROBID):
